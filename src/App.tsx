@@ -2,21 +2,8 @@ import { useState, createRef } from 'react'
 import { generateList } from './utils/rng.ts'
 import InputNumber from "./components/InputNumber.tsx"
 
-interface FormError {
-    minNum : string,
-    maxNum : string,
-    numTimes : string,
-    delaySeconds : string,
-    countdownSeconds : string
-}
 function App() {
-    const [errors, setFormErrors] = useState<FormError>({
-        minNum : '',
-        maxNum : '',
-        numTimes : '',
-        delaySeconds : '',
-        countdownSeconds : ''
-    })
+    const [errors, setFormErrors] = useState('')
 
     const minimumNumberField = createRef<HTMLInputElement>()
     const maximumNumberField = createRef<HTMLInputElement>()
@@ -27,17 +14,9 @@ function App() {
     const [numbers, setNumbers] = useState('');
 
     function validateNums(minNum: number, maxNum: number): boolean {
-        const newError = {
-            minNum : '',
-            maxNum : '',
-            numTimes : '',
-            delaySeconds : '',
-            countdownSeconds : ''
-        }
 
         if (minNum > maxNum) {
-            newError.minNum = 'Minimum number must be less than maximum number';
-            setFormErrors(newError);
+            setFormErrors('Minimum number must be less than maximum number');
             return false;
         }
         resetFormErrors();
@@ -45,13 +24,7 @@ function App() {
     }
 
     function resetFormErrors() {
-        setFormErrors( {
-            minNum : '',
-            maxNum : '',
-            numTimes : '',
-            delaySeconds : '',
-            countdownSeconds : ''
-        });
+        setFormErrors('');
     }
 
     const start = () => {
@@ -75,30 +48,28 @@ function App() {
                 <section id="range">
                     Enter a range:
                     Minimum: <InputNumber name="minimumNumber" defaultValue={1} min={1} max={99} step={1}
-                                          error={errors.minNum}
                                           ref={minimumNumberField}/>
                     Maximum: <InputNumber name="maximumNumber" defaultValue={5} min={2} max={99} step={1}
-                                          error={errors.maxNum}
                                           ref={maximumNumberField}/>
                 </section>
                 <section id="generate">
                     Generate
                     <InputNumber name="numTimes" defaultValue={5} min={1} max={99} step={1}
-                                 error={errors.numTimes}
                                  ref={numTimesField}/> times
                 </section>
                 <section id="delay">
                     Delay
                     <InputNumber name="delaySeconds" defaultValue={1.00} min={0.25} max={5.0} step={0.25}
-                                 error={errors.delaySeconds} ref={delaySecondsField}/> seconds
+                                 ref={delaySecondsField}/> seconds
                 </section>
                 <section id="countdown">
                     Countdown
                     <InputNumber name="countdownSeconds" defaultValue={1.00} min={0.0} max={5.0} step={0.25}
-                                 error={errors.countdownSeconds} ref={countdownSecondsField}/> seconds
+                                 ref={countdownSecondsField}/> seconds
                 </section>
                 <section id="startButton">
                     <button className="border border-gray-500 p-2">Start</button>
+                    <p><span className="error">{ errors }</span></p>
                 </section>
                 <section id="numDisplay">
                     { numbers }
