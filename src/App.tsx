@@ -1,9 +1,22 @@
-import {useState, createRef} from 'react'
+import { useState, createRef } from 'react'
 import { generateList } from './utils/rng.ts'
 import InputNumber from "./components/InputNumber.tsx"
 
+interface FormError {
+    minNum : string,
+    maxNum : string,
+    numTimes : string,
+    delaySeconds : string,
+    countdownSeconds : string
+}
 function App() {
-    const [errors, setFormErrors] = useState({})
+    const [errors, setFormErrors] = useState<FormError>({
+        minNum : '',
+        maxNum : '',
+        numTimes : '',
+        delaySeconds : '',
+        countdownSeconds : ''
+    })
 
     const minimumNumberField = createRef<HTMLInputElement>()
     const maximumNumberField = createRef<HTMLInputElement>()
@@ -11,16 +24,34 @@ function App() {
     const delaySecondsField = createRef<HTMLInputElement>()
     const countdownSecondsField = createRef<HTMLInputElement>()
 
-    const numDisplay = createRef<HtmlElement>()
+    const [numbers, setNumbers] = useState('');
 
-    function validateNums(minNum : number, maxNum : number) : boolean {
+    function validateNums(minNum: number, maxNum: number): boolean {
+        const newError = {
+            minNum : '',
+            maxNum : '',
+            numTimes : '',
+            delaySeconds : '',
+            countdownSeconds : ''
+        }
+
         if (minNum > maxNum) {
-            setFormErrors({
-                minNum: 'Minimum number should be less than maximum number.'
-            })
+            newError.minNum = 'Minimum number must be less than maximum number';
+            setFormErrors(newError);
             return false;
         }
+        resetFormErrors();
         return true;
+    }
+
+    function resetFormErrors() {
+        setFormErrors( {
+            minNum : '',
+            maxNum : '',
+            numTimes : '',
+            delaySeconds : '',
+            countdownSeconds : ''
+        });
     }
 
     const start = () => {
@@ -28,18 +59,18 @@ function App() {
         const maximumNumber = Number(maximumNumberField.current?.value);
         const numTimes = Number(numTimesField.current?.value);
 
-        if(!validateNums(minimumNumber, maximumNumber)) {
+        if (!validateNums(minimumNumber, maximumNumber)) {
             console.log("Not successful");
             return;
         }
 
-        console.log(generateList(numTimes, minimumNumber, maximumNumber, false));
-
+        const randomNumbers = generateList(numTimes, minimumNumber, maximumNumber, true)
+        setNumbers(randomNumbers.toString());
     }
 
     return (
         <div>
-            <form action={ start }>
+            <form action={start}>
                 <header><h1>Text-to-Speech Random Number Generator</h1></header>
                 <main>
                     <section id="range">
@@ -69,8 +100,8 @@ function App() {
                     <section id="startButton">
                         <button>Start</button>
                     </section>
-                    <section id="numDisplay" ref={numDisplay}>
-
+                    <section id="numDisplay">
+                        { numbers }
                     </section>
                 </main>
             </form>
