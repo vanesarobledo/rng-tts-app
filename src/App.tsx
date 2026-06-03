@@ -1,5 +1,5 @@
-import { useState, createRef } from 'react'
-import { generateList } from './utils/rng.ts'
+import {useState, createRef} from 'react'
+import {generateList} from './utils/rng.ts'
 import InputNumber from "./components/InputNumber.tsx"
 
 function App() {
@@ -47,32 +47,29 @@ function App() {
             <main>
                 <section id="range">
                     Enter a range:
-                    Minimum: <InputNumber name="minimumNumber" defaultValue={1} min={1} max={99} step={1}
-                                          ref={minimumNumberField}/>
-                    Maximum: <InputNumber name="maximumNumber" defaultValue={5} min={2} max={99} step={1}
-                                          ref={maximumNumberField}/>
+                    <InputNumber name="minimumNumber" label="Minimum:" defaultValue={1} min={1} max={99} step={1}
+                                          unit="" ref={minimumNumberField}/>
+                    <InputNumber name="maximumNumber" label="Maximum:" defaultValue={5} min={2} max={99} step={1}
+                                          unit="" ref={maximumNumberField}/>
                 </section>
                 <section id="generate">
-                    Generate
-                    <InputNumber name="numTimes" defaultValue={5} min={1} max={99} step={1}
-                                 ref={numTimesField}/> times
+                    <InputNumber name="numTimes" label="Generate" defaultValue={5} min={1} max={99} step={1}
+                                 unit="times" ref={numTimesField}/>
                 </section>
                 <section id="delay">
-                    Delay
-                    <InputNumber name="delaySeconds" defaultValue={1.00} min={0.25} max={5.0} step={0.25}
-                                 ref={delaySecondsField}/> seconds
+                    <InputNumber name="delaySeconds" label="Delay" defaultValue={1.00} min={0.25} max={5.0} step={0.25}
+                                 unit="seconds" ref={delaySecondsField}/>
                 </section>
                 <section id="countdown">
-                    Countdown
-                    <InputNumber name="countdownSeconds" defaultValue={1.00} min={0.0} max={5.0} step={0.25}
-                                 ref={countdownSecondsField}/> seconds
+                    <InputNumber name="countdownSeconds" label="Countdown" defaultValue={1.00} min={0.0} max={5.0} step={0.25}
+                                 unit="seconds" ref={countdownSecondsField}/>
                 </section>
                 <section id="startButton">
-                    <button className="border border-gray-500 p-2">Start</button>
-                    <p><span className="error">{ errors }</span></p>
+                    <button className="p-2 m-2 border border-gray-200 bg-neutral-50 rounded text-2xl hover:bg-neutral-500 hover:text-white">Start</button>
+                    <p><span className="error">{errors}</span></p>
                 </section>
                 <section id="numDisplay">
-                    { numbers }
+                    {numbers}
                 </section>
             </main>
         </form>

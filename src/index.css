@@ -113,7 +113,35 @@ code {
 }
 
 
-#main {
+main {
   display: grid;
-  /*grid-display-areas*/
+  grid-template-areas:
+    'range range range'
+    'generate delay countdown'
+    'startButton startButton startButton'
+    'numDisplay numDisplay numDisplay';
+}
+
+#range {
+  grid-area: range;
+}
+
+#generate {
+  grid-area: generate;
+}
+
+#delay {
+  grid-area: delay;
+}
+
+#countdown {
+  grid-area: countdown;
+}
+
+#startButton {
+  grid-area: startButton;
+}
+
+#numDisplay {
+  grid-area: numDisplay;
 }
