@@ -76,13 +76,13 @@ function App() {
 
         const randomNumbers: number[] = generateList(numTimes, minimumNumber, maximumNumber, true)
         setNumbers(randomNumbers);
-        await displayNumbers();
+        await displayNumbers(randomNumbers);
     };
 
-    async function displayNumbers(): Promise<void> {
-        for (const num of numbers) {
-            setCurrentNumber(num);
+    async function displayNumbers(nums: Array<number>): Promise<void> {
+        for (const num of nums) {
             speak(num);
+            setCurrentNumber(num);
             await customTimeout(form.delaySeconds);
         }
     }
