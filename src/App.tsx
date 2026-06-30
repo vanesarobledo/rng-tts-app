@@ -7,28 +7,28 @@ const SpeakNum = ({num, onDone}: { num: number, onDone: () => void }) => {
     const text = num.toString();
     const {Text, start, stop} = useSpeech({
         text,
-        preserveUtteranceQueue: false,
+        preserveUtteranceQueue: true,
         onStop: () => {
             onDone();
         }
     });
 
-    useEffect(() => {
+    useEffect((): () => void => {
         let isMounted: boolean = true;
 
-        const timer = setTimeout(() => {
+        const timer: number = setTimeout((): void => {
             if (isMounted) {
                 console.log(num);
                 start();
             }
         }, 50);
 
-        return () => {
+        return (): void => {
             isMounted = false;
             clearTimeout(timer);
             stop();
         }
-    }, [start, stop]);
+    }, []);
 
     return (
         <div>
