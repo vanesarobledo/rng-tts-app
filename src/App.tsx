@@ -3,38 +3,48 @@ import {generateList} from './utils/rng.ts'
 import InputNumber from "./components/InputNumber.tsx"
 import {useSpeech} from "react-text-to-speech";
 
-const SpeakNum = ({num, onDone}: { num: number, onDone: () => void }) => {
-    const text = num.toString();
-    const {Text, start, stop} = useSpeech({
-        text,
-        preserveUtteranceQueue: true,
-        onStop: () => {
-            onDone();
-        }
-    });
-
-    useEffect((): () => void => {
-        let isMounted: boolean = true;
-
-        const timer: number = setTimeout((): void => {
-            if (isMounted) {
-                console.log(num);
-                start();
+const SpeakNum =
+    ({num, onDone, delay}:
+     { num: number, onDone: () => void, delay: number }) => {
+        const text: string = num.toString();
+        const {Text, start, stop} = useSpeech({
+            text,
+            preserveUtteranceQueue: true,
+            onStop: async (): Promise<void> => {
+                await customTimeout(delay);
+                onDone();
             }
-        }, 50);
+        });
 
-        return (): void => {
-            isMounted = false;
-            clearTimeout(timer);
-            stop();
-        }
-    }, []);
+        useEffect((): () => void => {
+            let isMounted: boolean = true;
 
-    return (
-        <div>
-            <Text/>
-        </div>
-    );
+            const timer: number = setTimeout((): void => {
+                if (isMounted) {
+                    start();
+                }
+            }, 50);
+
+            return (): void => {
+                isMounted = false;
+                clearTimeout(timer);
+                stop();
+            }
+        }, []);
+
+        return (
+            <div>
+                <Text/>
+            </div>
+        );
+    }
+
+function customTimeout(seconds: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, seconds * 1000)
+    });
 }
 
 function App() {
@@ -164,6 +174,7 @@ function App() {
                                                 return prev + 1;
                                             });
                                         }}
+                                        delay={Number(form.delaySeconds)}
                                         key={currentIndex}
                                     />
                                 )}
