@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {generateList} from './utils/rng.ts'
 import InputNumber from "./components/InputNumber.tsx"
 import {useSpeech} from "react-text-to-speech";
@@ -6,21 +6,26 @@ import {useSpeech} from "react-text-to-speech";
 const SpeakNum = ({num, onDone}: { num: number, onDone: () => void }) => {
     const text = num.toString();
     const {Text, start, stop} = useSpeech({
-        text, preserveUtteranceQueue: false,
+        text,
+        preserveUtteranceQueue: false,
         onStop: () => {
-            console.log(isAlive);
-            if (isAlive.current) {
-                onDone();
-            }
+            onDone();
         }
     });
-    const isAlive = useRef(true);
 
     useEffect(() => {
-        isAlive.current = true;
-        start();
+        let isMounted: boolean = true;
+
+        const timer = setTimeout(() => {
+            if (isMounted) {
+                console.log(num);
+                start();
+            }
+        }, 50);
+
         return () => {
-            isAlive.current = false;
+            isMounted = false;
+            clearTimeout(timer);
             stop();
         }
     }, [start, stop]);
