@@ -1,24 +1,38 @@
-import {useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {generateList} from './utils/rng.ts'
 import InputNumber from "./components/InputNumber.tsx"
-import {useQueue, useSpeak} from "react-text-to-speech";
+import {useSpeech} from "react-text-to-speech";
+
+const SpeakNum = ({num, onDone}: { num: number, onDone: () => void }) => {
+    const text = num.toString();
+    const {Text, start, stop} = useSpeech({
+        text, preserveUtteranceQueue: false,
+        onStop: () => {
+            console.log(isAlive);
+            if (isAlive.current) {
+                onDone();
+            }
+        }
+    });
+    const isAlive = useRef(true);
+
+    useEffect(() => {
+        isAlive.current = true;
+        start();
+        return () => {
+            isAlive.current = false;
+            stop();
+        }
+    }, [start, stop]);
+
+    return (
+        <div>
+            <Text/>
+        </div>
+    );
+}
 
 function App() {
-    const {
-        speak,
-        Text,
-        speechStatus,
-        isInQueue,
-        start,
-        pause,
-        stop,
-    } = useSpeak();
-
-    const {
-        queue,
-        clearQueue,
-        dequeue
-    } = useQueue();
 
     const [errors, setFormErrors] = useState('')
 
@@ -48,8 +62,8 @@ function App() {
         }))
     }
 
-    const [numbers, setNumbers] = useState(Array<number>);
-    const [currentNumber, setCurrentNumber] = useState(0);
+    const [numbers, setNumbers] = useState<number[]>([]);
+    const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
     function validateNums(minNum: number, maxNum: number): boolean {
 
@@ -65,8 +79,8 @@ function App() {
         setFormErrors('');
     }
 
-    const startTTS = async () => {
-        const minimumNumber = Number(form.minimumNumber)
+    const startTTS = () => {
+        const minimumNumber = Number(form.minimumNumber);
         const maximumNumber = Number(form.maximumNumber);
         const numTimes = Number(form.numTimes);
 
@@ -74,27 +88,11 @@ function App() {
             return;
         }
 
-        const randomNumbers: number[] = generateList(numTimes, minimumNumber, maximumNumber, true)
+        const randomNumbers: number[] = generateList(numTimes, minimumNumber, maximumNumber, true);
         setNumbers(randomNumbers);
-        await displayNumbers(randomNumbers);
+        console.log(randomNumbers);
+        setCurrentIndex(0);
     };
-
-    async function displayNumbers(nums: Array<number>): Promise<void> {
-        for (const num of nums) {
-            speak(num);
-            setCurrentNumber(num);
-            await customTimeout(form.delaySeconds);
-        }
-    }
-
-    function customTimeout(seconds: number): Promise<boolean> {
-        return new Promise(resolve => {
-            setTimeout(function (): void {
-                resolve(true);
-            }, seconds * 1000)
-        })
-    }
-
 
     return (
         <>
@@ -150,7 +148,21 @@ function App() {
                         </section>
                     </section>
                     <section id="numDisplay" className="border border-neutral-100 flex content-center">
-                        <div className="m-auto text-6xl ">{currentNumber}</div>
+                        <div className="m-auto text-6xl">
+                            {currentIndex !== null && numbers[currentIndex] !== undefined &&
+                                (
+                                    <SpeakNum
+                                        num={numbers[currentIndex]}
+                                        onDone={(): void => {
+                                            setCurrentIndex(prev => {
+                                                if (prev == null || prev + 1 >= numbers.length) return null;
+                                                return prev + 1;
+                                            });
+                                        }}
+                                        key={currentIndex}
+                                    />
+                                )}
+                        </div>
                     </section>
                 </main>
             </form>
