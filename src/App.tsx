@@ -49,6 +49,9 @@ function customTimeout(seconds: number): Promise<void> {
 
 function App() {
 
+    const maxNumber = 100000;
+    const maxNumTimes = 50;
+
     const [errors, setFormErrors] = useState('')
 
     type FormState = {
@@ -123,11 +126,13 @@ function App() {
                         <section id="range">
                             Enter a range:
                             <div className="flex">
-                                <InputNumber name="minimumNumber" label="Minimum:" defaultValue={1} min={1} max={99}
+                                <InputNumber name="minimumNumber" label="Minimum:" defaultValue={1} min={1}
+                                             max={maxNumber}
                                              step={1} unit=""
                                              onChange={(e) =>
                                                  updateField('minimumNumber', Number(e.target.value))}/>
-                                <InputNumber name="maximumNumber" label="Maximum:" defaultValue={5} min={2} max={99}
+                                <InputNumber name="maximumNumber" label="Maximum:" defaultValue={5} min={2}
+                                             max={maxNumber}
                                              step={1} unit=""
                                              onChange={(e) =>
                                                  updateField('maximumNumber', Number(e.target.value))}/>
@@ -135,7 +140,8 @@ function App() {
                             </div>
                         </section>
                         <section id="generate">
-                            <InputNumber name="numTimes" label="Generate" defaultValue={5} min={1} max={99} step={1}
+                            <InputNumber name="numTimes" label="Generate" defaultValue={5} min={1} max={maxNumTimes}
+                                         step={1}
                                          unit="times"
                                          onChange={(e) =>
                                              updateField('numTimes', Number(e.target.value))}/>
