@@ -48,7 +48,6 @@ function customTimeout(seconds: number): Promise<void> {
 }
 
 function App() {
-
     const maxNumber = 100000;
     const maxNumTimes = 50;
 
@@ -159,6 +158,7 @@ function App() {
                                          onChange={(e) =>
                                              updateField('countdownSeconds', Number(e.target.value))}/>
                         </section>
+
                         <section id="startButton">
                             <button
                                 className="p-2 m-2 border border-gray-200 bg-neutral-50 rounded text-2xl hover:bg-neutral-500 hover:text-white"
