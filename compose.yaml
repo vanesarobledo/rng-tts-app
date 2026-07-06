@@ -5,4 +5,18 @@ services:
       dockerfile: Dockerfile
     image: rng-tts-app
     ports:
-      - "8080:8080"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ./node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+    stdin_open: true
+    tty: true
+    command: npm start
