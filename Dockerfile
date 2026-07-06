@@ -57,7 +57,7 @@ CMD ["npx", "serve", "-s", "dist", "-l", "3000"]
 
 
 # Build Stage
-FROM node:18-alpine AS build
+FROM node:${NODE_VERSION} AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
