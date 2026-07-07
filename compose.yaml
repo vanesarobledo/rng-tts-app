@@ -1,9 +1,8 @@
 services:
-  react-prod:
+  prod:
     build:
       context: .
       dockerfile: Dockerfile
-    image: rng-tts-app
     ports:
       - "3000:3000"
     environment:
