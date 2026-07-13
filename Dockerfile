@@ -1,8 +1,8 @@
-# =========================================
-# Stage 1: Develop the React.js Application
-# =========================================
 ARG NODE_VERSION=24.12.0-alpine
 
+# =========================================
+# Stage: dev (local development)
+# =========================================
 # Use a lightweight Node.js image for development
 FROM node:${NODE_VERSION} AS dev
 
@@ -18,46 +18,42 @@ RUN --mount=type=cache,target=/root/.npm npm install
 # Copy the rest of the application source code into the container
 COPY . .
 
-# Build the React.js application (outputs to /app/dist)
-RUN npm run build
+# Expose port 3000
+EXPOSE 3000
+
+# Command to run dev
+CMD ["npm", "start"]
 
 # =========================================
-# Stage 2: Serve static files with Node.js + `serve`
+# Stage: build
 # =========================================
-FROM node:${NODE_VERSION} AS runner
-
-# Set the environment to production for smaller + optimized installs
-ENV NODE_ENV=production
+# Use a lightweight Node.js image
+FROM node:${NODE_VERSION} AS build
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy only the production build output from the builder stage
-COPY --link --from=builder /app/dist ./dist
+# Copy package-related files first to leverage Docker's caching mechanism
+COPY package.json package-lock.json* ./
 
-# Install only the `serve` package (no global install, pinned version)
-RUN --mount=type=cache,target=/root/.npm npm install serve@^14.2.6 --omit=dev
+# Install project dependencies
+RUN --mount=type=cache,target=/root/.npm npm install
 
-# Run the container as a non-root user for security best practices
-USER node
-
-# Expose port 3000 (the same port configured in "serve -l 3000")
-EXPOSE 3000
-
-# Run `serve` directly to serve the built app
-CMD ["npx", "serve", "-s", "dist", "-l", "3000"]
-
-
-# Build Stage
-FROM node:${NODE_VERSION} AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+# Copy the rest of the application source code into the container
 COPY . .
+
+# Run build
 RUN npm run build
 
-# Production Stage
+# =========================================
+# Stage: production (nginx)
+# =========================================
 FROM nginx:stable-alpine AS production
-COPY --from=build /app .
+
+# Copy build into nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expose port 80
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]
